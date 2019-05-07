@@ -6,4 +6,7 @@ Each assignment has it's corresponding folder and all the relevant data should b
 ## Group members:
 * Princ Mullatahiri
 * Gent Rexha
-* Ilir Osmanaj
+
+- [x] Exercise 1. **Deadline**: 08.04.2019, 12.00 pm: upload your homework on TUWEL
+- [ ] Exercise 2. **Deadline:** 14.05.2019, 12.00 pm: upload your homework on TUWEL
+- [ ] Exercise 3. TBA~

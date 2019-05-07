@@ -1,0 +1,244 @@
+*Default:* 
+EXPLAIN ANALYZE SELECT a,b,c FROM r NATURAL JOIN s NATURAL JOIN t;
+
+*Hash only:*
+u11832486=> set enable_mergejoin=0;
+SET
+u11832486=> set enable_nestloop=0;
+SET
+u11832486=> EXPLAIN ANALYZE SELECT a,b,c FROM r NATURAL JOIN s NATURAL JOIN t;
+                                                      QUERY PLAN
+-----------------------------------------------------------------------------------------------------------------------
+ Hash Join  (cost=565.00..357290.72 rows=4753967 width=12) (actual time=16.068..2164.689 rows=4618252 loops=1)
+   Hash Cond: ((r.b = s.b) AND (t.c = s.c))
+   ->  Hash Join  (cost=270.00..11799.24 rows=975924 width=12) (actual time=7.134..312.366 rows=952062 loops=1)
+         Hash Cond: (t.a = r.a)
+         ->  Seq Scan on t  (cost=0.00..145.00 rows=10000 width=8) (actual time=0.018..1.848 rows=10000 loops=1)
+         ->  Hash  (cost=145.00..145.00 rows=10000 width=8) (actual time=7.054..7.055 rows=10000 loops=1)
+               Buckets: 16384  Batches: 1  Memory Usage: 519kB
+               ->  Seq Scan on r  (cost=0.00..145.00 rows=10000 width=8) (actual time=0.017..3.095 rows=10000 loops=1)
+   ->  Hash  (cost=145.00..145.00 rows=10000 width=8) (actual time=8.881..8.881 rows=10000 loops=1)
+         Buckets: 16384  Batches: 1  Memory Usage: 519kB
+         ->  Seq Scan on s  (cost=0.00..145.00 rows=10000 width=8) (actual time=0.028..4.451 rows=10000 loops=1)
+ Planning time: 0.390 ms
+ Execution time: 2549.228 ms
+(13 rows)
+______________________________________________________________________________________________________________
+
+create table j as select (random()*100)::int as a, (random()*20)::int as b from generate_series(1, 500);
+create table k as select (random()*100)::int as b, (random()*20)::int as c from generate_series(1, 500);
+create table l as select (random()*10)::int as a, (random()*20)::int as c from generate_series(1, 500);
+EXPLAIN ANALYZE SELECT a,b,c FROM j NATURAL JOIN k NATURAL JOIN l;
+                                                   QUERY PLAN
+-----------------------------------------------------------------------------------------------------------------
+ Hash Join  (cost=29.75..167.96 rows=621 width=12) (actual time=1.294..5.449 rows=501 loops=1)
+   Hash Cond: ((j.b = k.b) AND (l.c = k.c))
+   ->  Hash Join  (cost=14.25..56.12 rows=2575 width=12) (actual time=0.586..3.061 rows=2591 loops=1)
+         Hash Cond: (l.a = j.a)
+         ->  Seq Scan on l  (cost=0.00..8.00 rows=500 width=8) (actual time=0.025..0.183 rows=500 loops=1)
+         ->  Hash  (cost=8.00..8.00 rows=500 width=8) (actual time=0.540..0.540 rows=500 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 28kB
+               ->  Seq Scan on j  (cost=0.00..8.00 rows=500 width=8) (actual time=0.025..0.266 rows=500 loops=1)
+   ->  Hash  (cost=8.00..8.00 rows=500 width=8) (actual time=0.684..0.684 rows=500 loops=1)
+         Buckets: 1024  Batches: 1  Memory Usage: 28kB
+         ->  Seq Scan on k  (cost=0.00..8.00 rows=500 width=8) (actual time=0.033..0.348 rows=500 loops=1)
+ Planning time: 0.980 ms
+ Execution time: 5.631 ms
+(13 rows)
+______________________________________________________________________________________________________________
+
+set enable_hashjoin=0;
+set enable_nestloop=0;
+EXPLAIN ANALYZE SELECT a,b,c FROM j NATURAL JOIN k NATURAL JOIN l;
+                                                      QUERY PLAN
+-----------------------------------------------------------------------------------------------------------------------
+ Merge Join  (cost=259.60..271.69 rows=621 width=12) (actual time=7.219..8.175 rows=501 loops=1)
+   Merge Cond: ((l.a = j.a) AND (l.c = k.c))
+   ->  Sort  (cost=30.41..31.66 rows=500 width=8) (actual time=0.629..0.801 rows=500 loops=1)
+         Sort Key: l.a, l.c
+         Sort Method: quicksort  Memory: 48kB
+         ->  Seq Scan on l  (cost=0.00..8.00 rows=500 width=8) (actual time=0.028..0.197 rows=500 loops=1)
+   ->  Sort  (cost=229.19..235.34 rows=2462 width=12) (actual time=6.577..6.753 rows=538 loops=1)
+         Sort Key: j.a, k.c
+         Sort Method: quicksort  Memory: 211kB
+         ->  Merge Join  (cost=60.83..90.51 rows=2462 width=12) (actual time=0.945..3.493 rows=2453 loops=1)
+               Merge Cond: (j.b = k.b)
+               ->  Sort  (cost=30.41..31.66 rows=500 width=8) (actual time=0.380..0.545 rows=500 loops=1)
+                     Sort Key: j.b
+                     Sort Method: quicksort  Memory: 48kB
+                     ->  Seq Scan on j  (cost=0.00..8.00 rows=500 width=8) (actual time=0.021..0.176 rows=500 loops=1)
+               ->  Sort  (cost=30.41..31.66 rows=500 width=8) (actual time=0.560..1.333 rows=2454 loops=1)
+                     Sort Key: k.b
+                     Sort Method: quicksort  Memory: 48kB
+                     ->  Seq Scan on k  (cost=0.00..8.00 rows=500 width=8) (actual time=0.022..0.255 rows=500 loops=1)
+ Planning time: 0.632 ms
+ Execution time: 8.350 ms
+(21 rows)
+______________________________________________________________________________________________________________
+create table i as select (random()*1000000)::int as a, (random()*2000000)::int as b from generate_series(1, 10000);
+create table o as select (random()*1000000)::int as b, (random()*2000000)::int as c from generate_series(1, 10000);
+create table p as select (random()*1000000)::int as a, (random()*2000000)::int as c from generate_series(1, 10000);
+EXPLAIN ANALYZE SELECT a,b,c FROM i NATURAL JOIN o NATURAL JOIN p;
+EXPLAIN ANALYZE (FORMAT JSON) SELECT a,b,c FROM i NATURAL JOIN o NATURAL JOIN p;
+
+                                                         QUERY PLAN
+-----------------------------------------------------------------------------------------------------------------------------
+ Hash Join  (cost=735.66..984.58 rows=52 width=12) (actual time=18.789..18.789 rows=0 loops=1)
+   Hash Cond: ((o.b = i.b) AND (o.c = p.c))
+   ->  Seq Scan on o  (cost=0.00..146.70 rows=10170 width=8) (actual time=0.058..2.096 rows=10000 loops=1)
+   ->  Hash  (cost=582.42..582.42 rows=10216 width=12) (actual time=14.319..14.319 rows=107 loops=1)
+         Buckets: 16384  Batches: 1  Memory Usage: 133kB
+         ->  Hash Join  (cost=270.00..582.42 rows=10216 width=12) (actual time=10.177..14.272 rows=107 loops=1)
+               Hash Cond: (p.a = i.a)
+               ->  Seq Scan on p  (cost=0.00..146.70 rows=10170 width=8) (actual time=0.050..2.107 rows=10000 loops=1)
+               ->  Hash  (cost=145.00..145.00 rows=10000 width=8) (actual time=10.013..10.013 rows=10000 loops=1)
+                     Buckets: 16384  Batches: 1  Memory Usage: 519kB
+                     ->  Seq Scan on i  (cost=0.00..145.00 rows=10000 width=8) (actual time=0.027..4.478 rows=10000 loops=1)
+ Planning time: 0.677 ms
+ Execution time: 18.868 ms
+(13 rows)
+
+
+____________________________________________________________________________________________________________________
+SELECT COUNT(DISTINCT a) FROM t;
+u11832486=> SELECT COUNT(DISTINCT a) FROM t;
+ count
+-------
+    11
+(1 row)
+
+u11832486=> SELECT COUNT(DISTINCT a) FROM p;
+ count
+-------
+  9940
+(1 row)
+
+__________________________________________________________________________________________________________________
+SELECT a,b FROM r UNION ALL SELECT a,c FROM t;
+
+_________________________________________________________________________________________________________________
+5. a)
+Original Query: SELECT distinct(displayname) FROM users u WHERE id IN (SELECT owneruserid FROM posts p WHERE p.viewcount > u.views);
+
+u11832486=> EXPLAIN ANALYZE SELECT distinct(displayname) FROM users u WHERE id IN (SELECT owneruserid FROM posts p WHERE p.viewcount > u.views);
+                                                            QUERY PLAN
+----------------------------------------------------------------------------------------------------------------------------------
+ Unique  (cost=13306892.45..13306928.56 rows=7124 width=10) (actual time=86842.282..86843.249 rows=1829 loops=1)
+   ->  Sort  (cost=13306892.45..13306910.50 rows=7222 width=10) (actual time=86842.279..86842.579 rows=1868 loops=1)
+         Sort Key: u.displayname
+         Sort Method: quicksort  Memory: 141kB
+         ->  Seq Scan on users u  (cost=0.00..13306429.58 rows=7222 width=10) (actual time=63.279..86834.923 rows=1868 loops=1)
+               Filter: (SubPlan 1)
+               Rows Removed by Filter: 12577
+               SubPlan 1
+                 ->  Seq Scan on posts p  (cost=0.00..1828.56 rows=5482 width=4) (actual time=0.002..5.082 rows=4252 loops=14445)
+                       Filter: (viewcount > u.views)
+                       Rows Removed by Filter: 11168
+ Planning time: 0.129 ms
+ Execution time: 86843.403 ms
+(13 rows)
+
+For this case, unique doesn't actually do anything. Furthermore, I'm not sure if duplicates are even allowed considering that "Comparing ID's instead of displaynames should be faster right?
+
+u11832486=> EXPLAIN ANALYZE SELECT distinct(id) FROM users u WHERE id IN (SELECT owneruserid FROM posts p WHERE p.viewcount > u.views);
+                                                                 QUERY PLAN
+--------------------------------------------------------------------------------------------------------------------------------------------
+ Unique  (cost=0.29..13306693.21 rows=7222 width=4) (actual time=53.752..85162.288 rows=1868 loops=1)
+   ->  Index Scan using users_pkey on users u  (cost=0.29..13306675.15 rows=7222 width=4) (actual time=53.749..85159.634 rows=1868 loops=1)
+         Filter: (SubPlan 1)
+         Rows Removed by Filter: 12577
+         SubPlan 1
+           ->  Seq Scan on posts p  (cost=0.00..1828.56 rows=5482 width=4) (actual time=0.002..4.976 rows=4252 loops=14445)
+                 Filter: (viewcount > u.views)
+                 Rows Removed by Filter: 11168
+ Planning time: 0.268 ms
+ Execution time: 85162.727 ms
+(10 rows)
+
+Yeah! And it even uses the Index for comparing the users, but now the unique takes ages. Without unique maybe?
+
+u11832486=> EXPLAIN ANALYZE SELECT id FROM users u WHERE id IN (SELECT owneruserid FROM posts p WHERE p.viewcount > u.views);
+                                                      QUERY PLAN
+----------------------------------------------------------------------------------------------------------------------
+ Seq Scan on users u  (cost=0.00..13306429.58 rows=7222 width=4) (actual time=57.316..85656.449 rows=1868 loops=1)
+   Filter: (SubPlan 1)
+   Rows Removed by Filter: 12577
+   SubPlan 1
+     ->  Seq Scan on posts p  (cost=0.00..1828.56 rows=5482 width=4) (actual time=0.002..5.002 rows=4252 loops=14445)
+           Filter: (viewcount > u.views)
+           Rows Removed by Filter: 11168
+ Planning time: 0.202 ms
+ Execution time: 85656.846 ms
+(9 rows)
+
+Okay why is this taking so long now?
+
+
+
+
+
+
+EXPLAIN (FORMAT JSON) SELECT distinct(displayname) FROM users u WHERE id IN (SELECT owneruserid FROM posts p WHERE p.viewcount > u.views);
+
+EXPLAIN SELECT owneruserid from posts p, users u where p.viewcount > u.views;
+
+EXPLAIN ANALYZE SELECT u.id FROM users u WHERE EXISTS (SELECT * FROM posts p WHERE p.viewcount > u.views);
+
+u11832486=> EXPLAIN ANALYZE SELECT u.id FROM users u WHERE EXISTS (SELECT * FROM posts p WHERE p.viewcount > u.views);
+                                                     QUERY PLAN
+--------------------------------------------------------------------------------------------------------------------
+ Nested Loop Semi Join  (cost=0.00..2378110.81 rows=4815 width=4) (actual time=0.072..25.176 rows=14445 loops=1)
+   Join Filter: (p.viewcount > u.views)
+   ->  Seq Scan on users u  (cost=0.00..616.45 rows=14445 width=8) (actual time=0.027..8.769 rows=14445 loops=1)
+   ->  Materialize  (cost=0.00..1869.67 rows=16445 width=4) (actual time=0.000..0.000 rows=1 loops=14445)
+         ->  Seq Scan on posts p  (cost=0.00..1787.45 rows=16445 width=4) (actual time=0.025..0.025 rows=1 loops=1)
+ Planning time: 0.609 ms
+ Execution time: 27.221 ms
+(7 rows)
+
+u11832486=> EXPLAIN ANALYZE SELECT distinct(u.displayname) FROM users u WHERE EXISTS (SELECT * FROM posts p WHERE p.viewcount > u.views);
+                                                           QUERY PLAN
+--------------------------------------------------------------------------------------------------------------------------------
+ Unique  (cost=2378405.33..2378429.40 rows=4815 width=10) (actual time=87.589..98.925 rows=13828 loops=1)
+   ->  Sort  (cost=2378405.33..2378417.37 rows=4815 width=10) (actual time=87.588..92.042 rows=14445 loops=1)
+         Sort Key: u.displayname
+         Sort Method: quicksort  Memory: 1103kB
+         ->  Nested Loop Semi Join  (cost=0.00..2378110.81 rows=4815 width=10) (actual time=0.051..24.603 rows=14445 loops=1)
+               Join Filter: (p.viewcount > u.views)
+               ->  Seq Scan on users u  (cost=0.00..616.45 rows=14445 width=14) (actual time=0.016..6.069 rows=14445 loops=1)
+               ->  Materialize  (cost=0.00..1869.67 rows=16445 width=4) (actual time=0.000..0.000 rows=1 loops=14445)
+                     ->  Seq Scan on posts p  (cost=0.00..1787.45 rows=16445 width=4) (actual time=0.010..0.010 rows=1 loops=1)
+ Planning time: 0.268 ms
+ Execution time: 100.989 ms
+(11 rows)
+
+_______________________________________________________________________________________________________
+3)
+Original Query: SELECT DISTINCT postid FROM votes v WHERE (SELECT COUNT(*) FROM votes v2 WHERE v2.postid = v.postid AND v2.votetypeid = 2) = (SELECT COUNT(*) FROM votes v2 WHERE v2.postid = v.postid);
+
+EXPLAIN ANALYZE SELECT DISTINCT postid FROM votes v WHERE (SELECT COUNT(*) FROM votes v2 WHERE v2.postid = v.postid AND v2.votetypeid = 2) = (SELECT COUNT(*) FROM votes v2 WHERE v2.postid = v.postid); 
+
+Timeout can't get result.
+
+EXPLAIN ANALYZE SELECT DISTINCT(postid) FROM votes v WHERE postid IN (SELECT postid FROM VOTES v2 WHERE votetypeid = 2 AND v.postid = v2.postid);
+
+EXPLAIN ANALYZE SELECT DISTINCT(postid) FROM votes v WHERE postid IN (SELECT postid FROM VOTES WHERE votetypeid = 2 AND votetypeid != 2);
+
+ postid
+--------
+    251
+   2848
+  21370
+   6158
+   2024
+  21531
+   5411
+  17928
+  22262
+   4349
+(10 rows)
+
+WHERE 
+
+EXPLAIN ANALYZE SELECT DISTINCT(postid) FROM votes v WHERE postid IN (SELECT postid FROM VOTES v2 WHERE v.postid = v2.postid AND votetypeid NOT IN(SELECT DISTINCT(votetypeid) FROM votes where votetypeid != 2));
+

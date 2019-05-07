@@ -1,0 +1,79 @@
+\documentclass[a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[naustrian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,enumerate}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{subfig}
+\usepackage{float}
+\usepackage{listings}
+\lstset{language=sql,basicstyle=\small,keywordstyle=\ttfamily,morekeywords={REFERENCES,DEFERRED}}
+\usepackage{tabularx}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+\usepackage{enumitem}
+
+\usepackage{scrpage2}
+\pagestyle{scrheadings}
+
+\newcommand{\ul}[1]{\underline{#1}}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\R}{\ensuremath{\mathcal{R}}}
+
+\newtheorem{ex}{Aufgabe}
+\newenvironment{exercise}[2]%
+   {\def\tmp{}%
+    \ifx\points\tmp
+      \begin{ex}
+    \else
+      \def\tmp{1}%
+      \begin{ex}[#1][#2 Punkt\ifx\points\tmp\else e\fi]
+    \fi
+    \normalfont
+   }%
+   {\end{ex} %
+   }
+
+%% HINWEIS!
+%% 
+%% Die vorgegebene Formatierung der Loesung ist nur als
+%% Beispiel bzw. Hilfe gedacht und kann gerne geaendert
+%% werden.
+
+
+\title{Exercise Sheet 1, 2019}
+\subtitle{6.0 VU Advanced Database Systems}
+\author{FIRSTNAME LASTNAMENAME (Matrikelnr.)}
+
+\automark{section}
+\ohead{\pagemark}
+\makeatletter
+\chead{ADBS 2019 -- \@author}
+\makeatother
+\cfoot{}
+
+\begin{document}
+\maketitle
+
+
+
+
+\begin{exercise}{I/O}{1}
+  \begin{enumerate}[label=(\alph*)]
+    
+  \item Difficult Calculations.
+    
+  \item Average time.
+  \item Many other tasks.
+  \end{enumerate}
+  
+\end{exercise}
+
+\begin{exercise}{I/O in Query Plans}{2}
+
+\end{exercise}
+
+
+
+\end{document}
