@@ -84,14 +84,15 @@ public class CheckOutCountWithLocation {
                 }
             }
 
-
-            // Get highest key value (checkCount)
-            int max = Collections.max(checkOutsMap.values());
-            // Dirty method to get book based on key value.
-            Text book = new Text(getKeyFromValue(checkOutsMap, max).toString());
-            if (inventoryMap.containsKey(book.toString())) {
-                Text inventory = new Text(inventoryMap.get(book.toString()));
-                context.write(new TextPair(key, book), inventory);
+            if (checkOutsMap.size() != 0) {
+                // Get highest key value (checkCount)
+                int max = Collections.max(checkOutsMap.values());
+                // Dirty method to get book based on key value.
+                Text book = new Text(getKeyFromValue(checkOutsMap, max).toString());
+                if (inventoryMap.containsKey(book.toString())) {
+                    Text inventory = new Text(inventoryMap.get(book.toString()));
+                    context.write(new TextPair(key, book), inventory);
+                }
             }
         }
     }
