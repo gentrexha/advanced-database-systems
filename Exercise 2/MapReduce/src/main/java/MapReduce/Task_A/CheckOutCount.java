@@ -12,14 +12,11 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-
 import java.io.IOException;
 import java.util.*;
 
 public class CheckOutCount {
-
     public static class MyMapper extends Mapper<LongWritable, Text, Text, Text> {
-
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             // UsageClass,CheckoutType,MaterialType,CheckoutYear,CheckoutMonth,Checkouts,Title,Creator,Subjects,Publisher,PublicationYear
@@ -38,8 +35,6 @@ public class CheckOutCount {
     }
 
     public static class MyReducer extends Reducer<Text, Text, TextPair, NullWritable> {
-
-
         @Override
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             HashMap<String, Integer> map = new HashMap<String, Integer>();
@@ -55,7 +50,9 @@ public class CheckOutCount {
                     map.put(title, map.get(title) + checkOut);
                 }
             }
+            // Get highest key value (checkCount)
             int max = Collections.max(map.values());
+            // Dirty method to get book based on key value.
             Text book = new Text(getKeyFromValue(map, max).toString());
             context.write(new TextPair(key, book), NullWritable.get());
         }
@@ -63,16 +60,9 @@ public class CheckOutCount {
 
 
     public static void main(String[] args) throws Exception {
-
-
         Configuration conf = new Configuration();
-
-        conf.set("mapreduce.output.textoutputformat.separator",",");
-
-        // output a CSV
+        conf.set("mapreduce.output.textoutputformat.separator",","); // output a CSV
         Job job = Job.getInstance(conf);
-
-
         job.setJarByClass(CheckOutCount.class);
         job.setOutputKeyClass(LongWritable.class);
         job.setOutputValueClass(Text.class);
@@ -98,6 +88,4 @@ public class CheckOutCount {
         }
         return null;
     }
-
-
 }
