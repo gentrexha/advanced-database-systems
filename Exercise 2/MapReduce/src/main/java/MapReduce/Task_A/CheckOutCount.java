@@ -80,7 +80,7 @@ public class CheckOutCount {
         }
     }
 
-    private static Object getKeyFromValue(Map hm, Object value) {
+    public static Object getKeyFromValue(Map hm, Object value) {
         for (Object o : hm.keySet()) {
             if (hm.get(o).equals(value)) {
                 return o;
