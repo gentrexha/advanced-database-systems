@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class CheckOutCount {
+    @SuppressWarnings("Duplicates")
     public static class MyMapper extends Mapper<LongWritable, Text, Text, Text> {
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
@@ -37,7 +38,7 @@ public class CheckOutCount {
     public static class MyReducer extends Reducer<Text, Text, TextPair, NullWritable> {
         @Override
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-            HashMap<String, Integer> map = new HashMap<String, Integer>();
+            HashMap<String, Integer> map = new HashMap<>();
 
             for (Text value : values) {
                 String[] line = CSVSplitter.split(value.toString());
@@ -61,7 +62,7 @@ public class CheckOutCount {
 
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
-        conf.set("mapreduce.output.textoutputformat.separator",","); // output a CSV
+        conf.set("mapreduce.output.textoutputformat.separator", ","); // output a CSV
         Job job = Job.getInstance(conf);
         job.setJarByClass(CheckOutCount.class);
         job.setOutputKeyClass(LongWritable.class);

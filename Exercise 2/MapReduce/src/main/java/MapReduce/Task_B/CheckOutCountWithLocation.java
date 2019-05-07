@@ -1,17 +1,14 @@
 package MapReduce.Task_B;
 
 import MapReduce.CSVSplitter;
-import MapReduce.Task_A.CheckOutCount;
 import MapReduce.TextPair;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -23,6 +20,7 @@ import java.util.HashMap;
 import static MapReduce.Task_A.CheckOutCount.getKeyFromValue;
 
 public class CheckOutCountWithLocation {
+    @SuppressWarnings("Duplicates")
     public static class CheckOutsMapper extends Mapper<LongWritable, Text, Text, Text> {
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
@@ -56,8 +54,8 @@ public class CheckOutCountWithLocation {
     public static class MyReducer extends Reducer<Text, Text, TextPair, Text> {
         @Override
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-            HashMap<String, Integer> checkOutsMap = new HashMap<String, Integer>();
-            HashMap<String, String> inventoryMap = new HashMap<String, String>();
+            HashMap<String, Integer> checkOutsMap = new HashMap<>();
+            HashMap<String, String> inventoryMap = new HashMap<>();
 
             //Group checkOuts by books and get checkout sums
             for (Text value : values) {
