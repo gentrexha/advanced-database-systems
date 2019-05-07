@@ -1,4 +1,4 @@
-// Created as a template for Advanced Database Systems 2019
+package MapReduce;// Created as a template for Advanced Database Systems 2019
 
 import java.util.ArrayList;
 

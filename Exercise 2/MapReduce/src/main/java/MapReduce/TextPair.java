@@ -1,4 +1,4 @@
-// Originally based on an example from "Hadoop: The Definitive Guide" by Tom White.
+package MapReduce;// Originally based on an example from "Hadoop: The Definitive Guide" by Tom White.
 // https://github.com/tomwhite/hadoop-book/blob/master/ch05-io/src/main/java/oldapi/TextPair.java
 // Copyright (C) 2014 Tom White
 //
