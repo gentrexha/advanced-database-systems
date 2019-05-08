@@ -25,7 +25,7 @@ knitr::include_graphics('images/Exercise_1_Task_A.png')
 
 For this task we used the MultipleInputs class. It allows you to create MapReduce jobs with multiple mapper functions, each for a different input file. The results of the mappers is then sent to the same reducer function. For the two datasets we've created two separate mappers which send the row with the author as key to the reducer. The reducer then creates two HashMaps, for both checkouts and inventory. Checkout HashMap includes all the titles and sums up the checkouts for each title. After that it selects the title with max checkouts and creates Author, Title TextPair and adds PublicationYear, Subjects, ItemLocation from the second HashMap where all the locations for all titles of said Author are stored.
 
-```{r, out.width = "500px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}Diagram of the Map Reduce job to solve Task B"}
+```{r, out.width = "450px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}Diagram of the Map Reduce job to solve Task B"}
 knitr::include_graphics('images/Exercise_1_Task_B.png')
 ```
 
