@@ -1,0 +1,51 @@
+---
+title: "Exercise Sheet 2, 2019"
+subtitle: "6.0 VU Advanced Database Systems"
+author: "Gent Rexha (11832486), Princ Mullatahiri (11846033)"
+date: "08.05.2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercise 1 (MapReduce)[4 Punkte]
+
+### a
+
+For this, we take the input and map the author to the row in the `checkouts-by-title.csv` file. After that most of the heavy lifting is being done in the reducer, where a hashmap of all the titles of the current creator is created and for each value in our values list the number of checkouts is updated for the corresponding title. After having iterated all the values, the title with the maximum amount of checkouts is written out with it's corresponding author.
+
+### b
+
+## Exercise 2 (Costs of MapReduce)[1 Punkte]
+
+### a
+
+If not using a combiner, there's some skew to be expected in the Reducer considering different keys can receive different amount of values and therefore result into different processing times. For example there can be a lot of values for key_A but very few or none for key_B, resulting in more calculation for the values in key_A and therefore more processing time. 
+
+This is till dependent on the `key,value` data distribution, because in the extreme case where all of your values are of the same key, the number of reducers doesn't matter. In this case a custom partitioner might make more sense.
+
+### b
+
+Considering a small number of reducers, we expect more randomized key values at different reducers and a more even distribution of high processing values of one key. This also results in less parellesim of reducers and might take longer.
+
+If the numbers of reducers is increased, the probability of only one reducer ending up with with a key,value pair where there's a lot of values is also higher, therefore increasing the skewness to a very significant level. On the other hand a maximum of parellelism is achieved, but with this comes the problem of computation overhead.
+
+### c
+
+### d
+
+## Exercise 3 (Relational Operations)[2 Punkte]
+
+Placeholder
+
+## Exercise 4 (Hive Exercise)[4 Punkte]
+
+Placeholder
+
+## Exercise 5 (Spark in Scala)[4 Punkte]
+
+Placeholder
+
+## References
