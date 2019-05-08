@@ -38,7 +38,37 @@ If the numbers of reducers is increased, the probability of only one reducer end
 
 ## Exercise 3 (Relational Operations)[2 Punkte]
 
-Placeholder
+![alt text](C:\Princi\TU Wien\Semestri 1\Advanced Database Systems\Exercise\advanced_db\Exercise 2\Submission\images\Exercise3.png)
+
+### a: Bag Union
+code:
+sum = 0
+foreach val:value 
+	sum = sum + 1
+context.write(Key, sum)
+
+First we get all values from the same key in reducer, then we iterate through each value and increment sum variable, then we simply write to output key and sum as value.
+
+### b
+code:
+first group by table origin and seperate them in diffrent vales : value 1 and value 2 corresponding to input file 1 and input file 2
+sum_value1 = 0
+sum_value2 = 0
+foreach val: value 1
+	sum_value1 = sum_value1 + 1
+foreach val: value 2
+	sum_value2 = sum_value2 + 1
+
+if sum_value1 >= sum_value2
+	context.write(Key, sum_value1 - sum_value2)
+	
+First we group by table origin, then sum up values into two different variables sum_value1 and sum_value2, then we substract these values if value is positive we write to output else just skip that Key
+ 
+
+dif = 0
+foreach val:value 
+	sum = sum + 1
+context.write(Key, sum)
 
 ## Exercise 4 (Hive Exercise)[4 Punkte]
 
