@@ -77,8 +77,16 @@ context.write(Key, sum)
 ```
 
 ## Exercise 4 (Hive Exercise) [4 Punkte]
-
-Placeholder
+**a)**
+For task A we have to create tables and populate them with data given in CSV files. So first we create the table, we tell that values are seperated by comma and then give the location of CSV file.
+```
+CREATE EXTERNAL TABLE IF NOT EXISTS group11.badges (
+id INT,class STRING, date DATE, name STRING, tagbased STRING, userid INT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/home/adbs/2019S/shared/hive/badges.csv';
+```
 
 ## Exercise 5 (Spark in Scala) [4 Punkte]
 
