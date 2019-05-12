@@ -110,5 +110,34 @@ AND (b.name LIKE 'Autobiographer');
 
 
 ## Exercise 5 (Spark in Scala) [4 Punkte]
+**a)**
+Placeholder
 
+**b)**
+
+```{r, out.width = "300px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}LEFT: SQL DAG Diagram. RIGHT: Dataframe API DAG Diagram"}
+knitr::include_graphics('images/query1.png')
+```
+
+```{r, out.width = "300px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}LEFT: SQL DAG Diagram. RIGHT: Dataframe API DAG Diagram"}
+knitr::include_graphics('images/query2.png')
+```
+
+```{r, out.width = "300px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}LEFT: SQL DAG Diagram. RIGHT: Dataframe API DAG Diagram"}
+knitr::include_graphics('images/query3.png')
+```
+
+```{r, out.width = "300px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}LEFT: SQL DAG Diagram. RIGHT: Dataframe API DAG Diagram"}
+knitr::include_graphics('images/query4.png')
+```
+
+```{r, out.width = "300px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}LEFT: SQL DAG Diagram. RIGHT: Dataframe API DAG Diagram"}
+knitr::include_graphics('images/query5.png')
+```
+
+```{r, out.width = "300px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}Query Duration Comparison"}
+knitr::include_graphics('images/Query Duration Comparison.png')
+```
+
+**c)**
 Placeholder
