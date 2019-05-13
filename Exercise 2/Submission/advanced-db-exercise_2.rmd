@@ -15,15 +15,29 @@ knitr::opts_chunk$set(fig.pos = 'h')
 
 **a)** First of all, we take the input and map the author to the row in the `checkouts-by-title.csv` file. After that most of the heavy lifting takes place in the reducer, where a hashmap of all the titles of the current creator is created and for each value in our values list the number of checkouts is updated for the corresponding title. After having iterated all the values, the title with the maximum amount of checkouts is written out with it's corresponding author.
 
+Statistics:
+
+- replication rate = ???
+- input size = 6789 Mbyte
+- output = 27 Mbyte
+
 ```{r, out.width = "300px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}Diagram of the Map Reduce job to solve Task A"}
 knitr::include_graphics('images/Exercise_1_Task_A.png')
 ```
 
 **b)** For this task we used the MultipleInputs class. It allows you to create MapReduce jobs with multiple mapper functions, each for a different input file. The results of the mappers is then sent to the same reducer function. For the two datasets we've created two separate mappers which send the row with the author as key to the reducer. The reducer then creates two HashMaps, for both checkouts and inventory. Checkout HashMap includes all the titles and sums up the checkouts for each title. After that it selects the title with max checkouts and creates Author, Title TextPair and adds PublicationYear, Subjects, ItemLocation from the second HashMap where all the locations for all titles of said Author are stored.
 
+Statistics:
+
+- replication rate = ???
+- input = 13944 Mbyte
+- output = 36 Mbyte
+
 ```{r, out.width = "450px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}Diagram of the Map Reduce job to solve Task B"}
 knitr::include_graphics('images/Exercise_1_Task_B.png')
 ```
+
+\newpage
 
 ## Exercise 2 (Costs of MapReduce) [1 Punkte]
 
@@ -76,6 +90,8 @@ foreach val:value
 context.write(Key, sum)
 ```
 
+\newpage
+
 ## Exercise 4 (Hive Exercise) [4 Punkte]
 **a)**
 For task A we have to create tables and populate them with data given in CSV files. So first we create the table, we tell that values are seperated by comma and then give the location of CSV file.
@@ -108,10 +124,9 @@ AND u.id = b.userid
 AND (b.name LIKE 'Autobiographer');
 ```
 
+\newpage
 
 ## Exercise 5 (Spark in Scala) [4 Punkte]
-**a)**
-Placeholder
 
 **b)**
 
