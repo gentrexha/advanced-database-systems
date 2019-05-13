@@ -155,4 +155,14 @@ knitr::include_graphics('images/Query Duration Comparison.png')
 ```
 
 **c)**
-Placeholder
+
+Narrow dependencies: Each partition of the parent RDD is used by at most one partition of the child RDD. 
+```
+[parent RDD partition] ---> [child RDD partition]
+```
+Wide dependencies: Each partition of the parent RDD may be used by multiple child partitions.
+```
+					   ---> [child RDD partition 1]
+[parent RDD partition] ---> [child RDD partition 2]
+                       ---> [child RDD partition 3]
+```
