@@ -17,7 +17,7 @@ knitr::opts_chunk$set(fig.pos = 'h')
 
 Statistics:
 
-- replication rate = ???
+- replication rate = 1
 - input size = 6789 Mbyte
 - output = 27 Mbyte
 
@@ -29,7 +29,7 @@ knitr::include_graphics('images/Exercise_1_Task_A.png')
 
 Statistics:
 
-- replication rate = ???
+- replication rate = 1
 - input = 13944 Mbyte
 - output = 36 Mbyte
 
@@ -128,7 +128,7 @@ AND (b.name LIKE 'Autobiographer');
 
 ## Exercise 5 (Spark in Scala) [4 Punkte]
 
-**b)**
+**b)** As displayed in Figure 9, we can see that most of the time the Dataframe API variant of the query outperforms the SQL version in duration. Although analyzing and interpreting the results didn't make much sense. Most of the times the explanation plans look, and are, the same. Except for Query 5, which we couldn't figure out why.
 
 ```{r, out.width = "300px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}LEFT: SQL DAG Diagram. RIGHT: Dataframe API DAG Diagram"}
 knitr::include_graphics('images/query1.png')
