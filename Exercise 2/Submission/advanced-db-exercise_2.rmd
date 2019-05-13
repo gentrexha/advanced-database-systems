@@ -166,3 +166,7 @@ Wide dependencies: Each partition of the parent RDD may be used by multiple chil
 [parent RDD partition] ---> [child RDD partition 2]
                        ---> [child RDD partition 3]
 ```
+
+```{r, out.width = "300px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}Wide and Narrow Dependencies Visualisation"}
+knitr::include_graphics('images/Dependencies.png')
+```
