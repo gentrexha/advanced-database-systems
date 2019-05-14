@@ -13,7 +13,7 @@ knitr::opts_chunk$set(fig.pos = 'h')
 
 ## Exercise 1 (MapReduce) [4 Punkte]
 
-**a)** First of all, we take the input and map the author to the row in the `checkouts-by-title.csv` file <Author,Row>. After that most of the heavy lifting takes place in the reducer, where a hashmap of all the titles of the current creator is created and for each value in our values list the number of checkouts is updated for the corresponding title. After having iterated all the values, the title with the maximum amount of checkouts is written out with it's corresponding author <Author, Most Checkouts Book Title>.
+**a)** First of all, we take the input and map the author to the row in the `checkouts-by-title.csv` file. The output from the mapper is `<Author,RowContent>` for the read line. After that most of the heavy lifting takes place in the reducer, where a hashmap of all the titles of the current creator is created and for each value in our values list the number of checkouts is updated for the corresponding title. After having iterated all the values, the title with the maximum amount of checkouts is written out with it's corresponding author. Reducer output is `<Author, Most Checkouts Book Title>`.
 
 Statistics:
 
@@ -25,7 +25,7 @@ Statistics:
 knitr::include_graphics('images/Exercise_1_Task_A.png')
 ```
 
-**b)** For this task we used the MultipleInputs class. It allows you to create MapReduce jobs with multiple mapper functions, each for a different input file. The results of the mappers is then sent to the same reducer function. For the two datasets we've created two separate mappers which send the row with the author as key to the reducer <Author, Row>. The reducer then creates two HashMaps, for both checkouts and inventory. Checkout HashMap includes all the titles and sums up the checkouts for each title. After that it selects the title with max checkouts and creates Author, Title TextPair and adds PublicationYear, Subjects, ItemLocation from the second HashMap where all the locations for all titles of said Author are stored <Author, Most Checkouts Book Title, Publication Year, Subjects, Item Location>.
+**b)** For this task we used the MultipleInputs class. It allows you to create MapReduce jobs with multiple mapper functions, each for a different input file. The results of the mappers is then sent to the same reducer function. For the two datasets we've created two separate mappers which send the row with the author as key to the reducer `<Author, RowContent>`. The reducer then creates two HashMaps, for both checkouts and inventory. Checkout HashMap includes all the titles and sums up the checkouts for each title. After that it selects the title with max checkouts and creates Author, Title TextPair and adds PublicationYear, Subjects, ItemLocation from the second HashMap where all the locations for all titles of said Author are stored. The reducer output looks like this `<Author, Most Checkouts Book Title, Publication Year, Subjects, Item Location>`.
 
 Statistics:
 
@@ -57,47 +57,53 @@ knitr::include_graphics('images/Exercise_1_Task_B.png')
 knitr::include_graphics('images/Exercise3.png')
 ```
 
-**a)** Bag Union Pseudo-code:
+**a)** First we get all values from the same key in reducer, then we iterate through each value and increment sum variable, then we simply write to output key and sum as value. Bag Union Pseudo-code:
+
+Map
+
+The map function maps each `value` to `(value, Null)`.
+
+Reduce
 ```{r, eval = FALSE}
 sum = 0
+
 foreach val:value 
-	sum = sum + 1
-context.write(Key, sum)
+	sum += 1
+
+context.write(key, sum)
 ```
-First we get all values from the same key in reducer, then we iterate through each value and increment sum variable, then we simply write to output key and sum as value.
 
 **b)** Bag Difference Pseudo-code:
+
+Map:
+
 ```{r, eval = FALSE}
-first group by table origin and seperate them in diffrent vales : value 1 and 
-value 2 corresponding to input file 1 and input file 2
-sum_value1 = 0
-sum_value2 = 0
-foreach val: value 1
-	sum_value1 = sum_value1 + 1
-foreach val: value 2
-	sum_value2 = sum_value2 + 1
+// For tuples in R:
+value -> (value, 1)
 
-if sum_value1 >= sum_value2
-	context.write(Key, sum_value1 - sum_value2)
-	
-First we group by table origin, then sum up values into two different variables sum_value1
-and sum_value2, then we substract these values if value is positive, 
-we write to output else just skip that Key
-
-dif = 0
-foreach val:value 
-	sum = sum + 1
-context.write(Key, sum)
+// For tuples in S:
+value -> (value, -1)
 ```
 
-Communication cost = input file size + 2 ×(sum of the sizes of all files passed from Map processes to Reduce processes) + the sum of the output sizes of the Reduce processes.
+Reduce:
+
+```{r, eval = FALSE}
+sum = 0
+
+foreach val:values
+  sum += val
+
+if sum > 0
+  context.write(key, sum)
+```
+
+Communication cost = input file size + 2 * (sum of the sizes of all files passed from Map processes to Reduce processes) + the sum of the output sizes of the Reduce processes.
 
 \newpage
 
 ## Exercise 4 (Hive Exercise) [4 Punkte]
-**a)**
-For task A we have to create tables and populate them with data given in CSV files. So first we create the table, we tell that values are seperated by comma and then give the location of CSV file.
-```
+**a)** For task A we have to create tables and populate them with data given in CSV files. So first we create the table, we tell that values are seperated by comma and then give the location of CSV file.
+```{sql, eval = FALSE}
 CREATE EXTERNAL TABLE IF NOT EXISTS group11.badges (
 id INT,class STRING, date DATE, name STRING, tagbased STRING, userid INT)
 ROW FORMAT DELIMITED
@@ -106,15 +112,67 @@ STORED AS TEXTFILE
 LOCATION '/home/adbs/2019S/shared/hive/badges.csv';
 ```
 
-**b)**
-Placeholder
+**b)** Since hive does not allow new, slightly renamed versions to partition (or bucket) existing tables have been created. Creation is a multi-step process: the first step is to create a new, empty table. Using an `INSERT OVERWRITE` statement, this table is then populated. Here the selection order is important and must match the order in which the columns of the table have been declared. The columns of partitioning come last.
 
-**c)**
-Because Hive does not support subqueries and also does not support unequal semi join we have to replace EXISTS with JOIN and then filter the condition in where clause.
-And for count we place it in a table and for filtering also call it in WHERE clause.
+```{sql, eval = FALSE}
+CREATE TABLE badges_p (id INT, class INT, timestamp STRING, name STRING, tagbased BOOLEAN) 
+PARTITIONED BY (userid INT);
+INSERT OVERWRITE TABLE badges_p PARTITION (userid) SELECT id, class, timestamp, 
+  name, tagbased, userid FROM badges;
+```
+
+```{sql, eval = FALSE}
+CREATE TABLE users_p (id INT, aboutme STRING, accountid INT, creationdate STRING, 
+displayname STRING, downvotes INT, lastaccessdate STRING, location STRING, 
+profileimageurl STRING, upvotes INT, views INT, websiteurl STRING) 
+PARTITIONED BY (reputation INT);
+INSERT OVERWRITE TABLE users_p PARTITION (reputation) 
+SELECT id, aboutme, accountid, creationdate, displayname, downvotes, lastaccessdate, 
+location, profileimageurl, upvotes, views, websiteurl, reputation 
+FROM users;
+```
+
+For columns with not too many distinct values, partitioning is useful. Instead of speeding up the query, too small splits can add overhead. This disqualifies all primary and foreign keys in essence, as they would create a vast number of splits.
+
+This leaves only the reputation of the user, so we used to partition this column. Since only about one third of all users fulfill the attribute of `reputation > 100` this looked promising. However, in fact, our query time increased from 67.05 seconds to 74.47.
+
+Dividing tables into buckets works like partitioning. First the table is created, then another query is filled in. Sample code for the `users` and `comments` tables:
+
+```{sql, eval = FALSE}
+CREATE TABLE users_b (id INT, aboutme STRING, accountid INT, creationdate STRING, 
+displayname STRING, downvotes INT, lastaccessdate STRING, location STRING, 
+profileimageurl STRING, upvotes INT, views INT, websiteurl STRING, reputation INT) 
+CLUSTERED BY (id) INTO 32 BUCKETS;
+INSERT OVERWRITE TABLE users_b 
+SELECT id, aboutme, accountid, creationdate, displayname, downvotes, lastaccessdate, 
+location, profileimageurl, upvotes, views, websiteurl, reputation 
+FROM users;
+```
+
+```{sql, eval = FALSE}
+CREATE TABLE comments_b (id INT, creationdate STRING, postid INT, score INT, 
+text STRING, userdisplayname STRING, userid INT) 
+CLUSTERED BY (id) INTO 32 BUCKETS;
+INSERT OVERWRITE TABLE comments_b 
+SELECT id, creationdate, postid, score, text, userdisplayname, userid 
+FROM comments;
+```
+
+Applying buckets to the table of `comments` reduced the time of the query by about 5 seconds. Doing the same for `users` again didn't yield any significant results.
+
+Next different bucket sizes were tested.
+
+  - No buckets: 96s
+  - 8 Buckets: 119s
+  - 32 Buckets: 99s
+  - 64 Buckets: 97s
+  - 128 Buckets: 91s
+
+**c)** Because Hive does not support subqueries and also does not support unequal semi join we have to replace `EXISTS` with `JOIN`. And for count we place it in a table and filtering is applied in the WHERE clause.
 ```{sql, eval = FALSE}
 SELECT p.id
-FROM comments c, badges_tmp b, posts p, postlinks pl, users u, (SELECT COUNT(upvotes) as nrupvotes FROM users) k
+FROM comments c, badges_tmp b, posts p, postlinks pl, users u, 
+(SELECT COUNT(upvotes)as nrupvotes FROM users) k
 WHERE c.postid=p.id 
 AND u.upvotes + 3 >= k.nrupvotes
 AND u.id=p.owneruserid 
@@ -128,7 +186,9 @@ AND (b.name LIKE 'Autobiographer');
 
 ## Exercise 5 (Spark in Scala) [4 Punkte]
 
-**b)** As displayed in Figure 9, we can see that most of the time the Dataframe API variant of the query outperforms the SQL version in duration. Although analyzing and interpreting the results didn't make much sense. Most of the times the explanation plans look, and are, the same. Except for Query 5, which we couldn't figure out why.
+**a)** All solutions are inside the `.ipynb`. 
+
+**b)** As displayed in Figure 9, we can see that most of the time the Dataframe API variant of the query outperforms the SQL version in duration. Although analyzing and interpreting the results didn't make much sense. Most of the times the explanation plans look, and are, the same.
 
 ```{r, out.width = "300px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}LEFT: SQL DAG Diagram. RIGHT: Dataframe API DAG Diagram"}
 knitr::include_graphics('images/query1.png')
@@ -154,9 +214,7 @@ knitr::include_graphics('images/query5.png')
 knitr::include_graphics('images/Query Duration Comparison.png')
 ```
 
-**c)**
-
-Narrow dependencies: Each partition of the parent RDD is used by at most one partition of the child RDD. 
+**c)** Narrow dependencies: Each partition of the parent RDD is used by at most one partition of the child RDD. 
 ```
 [parent RDD partition] ---> [child RDD partition]
 ```
@@ -166,6 +224,8 @@ Wide dependencies: Each partition of the parent RDD may be used by multiple chil
 [parent RDD partition] ---> [child RDD partition 2]
                        ---> [child RDD partition 3]
 ```
+
+Concluding from the DAG diagrams, all of the queries have narrow dependencies.
 
 ```{r, out.width = "300px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}Wide and Narrow Dependencies Visualisation"}
 knitr::include_graphics('images/Dependencies.png')
