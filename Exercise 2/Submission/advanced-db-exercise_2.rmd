@@ -112,11 +112,9 @@ Placeholder
 **c)**
 Because Hive does not support subqueries and also does not support unequal semi join we have to replace EXISTS with JOIN and then filter the condition in where clause.
 And for count we place it in a table and for filtering also call it in WHERE clause.
-```
+```{sql, eval = FALSE}
 SELECT p.id
-FROM comments c, badges_tmp b, 
-posts p JOIN postlinks pl ON pl.postid = p.id,
-users u, (SELECT COUNT(upvotes) as nrupvotes FROM users) k
+FROM comments c, badges_tmp b, posts p, postlinks pl, users u, (SELECT COUNT(upvotes) as nrupvotes FROM users) k
 WHERE c.postid=p.id 
 AND u.upvotes + 3 >= k.nrupvotes
 AND u.id=p.owneruserid 
