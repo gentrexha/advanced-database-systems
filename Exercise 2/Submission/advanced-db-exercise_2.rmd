@@ -90,6 +90,8 @@ foreach val:value
 context.write(Key, sum)
 ```
 
+Communication cost = input file size + 2 ×(sum of the sizes of all files passed from Map processes to Reduce processes) + the sum of the output sizes of the Reduce processes.
+
 \newpage
 
 ## Exercise 4 (Hive Exercise) [4 Punkte]
