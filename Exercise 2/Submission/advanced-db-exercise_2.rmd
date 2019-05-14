@@ -13,7 +13,7 @@ knitr::opts_chunk$set(fig.pos = 'h')
 
 ## Exercise 1 (MapReduce) [4 Punkte]
 
-**a)** First of all, we take the input and map the author to the row in the `checkouts-by-title.csv` file. After that most of the heavy lifting takes place in the reducer, where a hashmap of all the titles of the current creator is created and for each value in our values list the number of checkouts is updated for the corresponding title. After having iterated all the values, the title with the maximum amount of checkouts is written out with it's corresponding author.
+**a)** First of all, we take the input and map the author to the row in the `checkouts-by-title.csv` file <Author,Row>. After that most of the heavy lifting takes place in the reducer, where a hashmap of all the titles of the current creator is created and for each value in our values list the number of checkouts is updated for the corresponding title. After having iterated all the values, the title with the maximum amount of checkouts is written out with it's corresponding author <Author, Most Checkouts Book Title>.
 
 Statistics:
 
@@ -25,7 +25,7 @@ Statistics:
 knitr::include_graphics('images/Exercise_1_Task_A.png')
 ```
 
-**b)** For this task we used the MultipleInputs class. It allows you to create MapReduce jobs with multiple mapper functions, each for a different input file. The results of the mappers is then sent to the same reducer function. For the two datasets we've created two separate mappers which send the row with the author as key to the reducer. The reducer then creates two HashMaps, for both checkouts and inventory. Checkout HashMap includes all the titles and sums up the checkouts for each title. After that it selects the title with max checkouts and creates Author, Title TextPair and adds PublicationYear, Subjects, ItemLocation from the second HashMap where all the locations for all titles of said Author are stored.
+**b)** For this task we used the MultipleInputs class. It allows you to create MapReduce jobs with multiple mapper functions, each for a different input file. The results of the mappers is then sent to the same reducer function. For the two datasets we've created two separate mappers which send the row with the author as key to the reducer <Author, Row>. The reducer then creates two HashMaps, for both checkouts and inventory. Checkout HashMap includes all the titles and sums up the checkouts for each title. After that it selects the title with max checkouts and creates Author, Title TextPair and adds PublicationYear, Subjects, ItemLocation from the second HashMap where all the locations for all titles of said Author are stored <Author, Most Checkouts Book Title, Publication Year, Subjects, Item Location>.
 
 Statistics:
 
@@ -45,7 +45,7 @@ knitr::include_graphics('images/Exercise_1_Task_B.png')
 
 **b)** Considering a small number of reducers, more randomized key values are expected at different reducers and a more even distribution of one key's intensive processing values. This also leads to less parellesim and may take longer. If the number of reducers is increased, the likelihood that only one reducer will end up with a <key, value> pair where many values are also higher. Therefore, the skewedness is increased to a very important level. On the other hand, a maximum of parallelism is achieved, but the problem of overhead computing comes with this.
 
-**c)** If we use a combiner in the WordCount MapReduce program then we'd have less reducer calculation and more for mapping phase, basically we'd calculate sum of word occurrences for each mapper node in a document. And we don't expect to be a significant skew because reducer would have less work to do. The best way to avoid skewing would be to use combiner and partition where we determine which task reduction receives which key and its values list, to partition the key we could use a hash function and this would ensure that all pairs with the same key go to the same reducer.
+**c)** If we use a combiner in the WordCount MapReduce program then we'd have less reducer calculation and more for mapping phase, basically we'd calculate sum of word occurrences for each mapper node in a document. And we don't expect to be a significant skew because reducer would have less work to do. The best way to avoid skewing would be to use combiner and partition where we determine which task reduction receives which key and its values?list, to partition the key we could use a hash function and this would ensure that all pairs with the same key go to the same reducer.
 
 **d)** Communication costs are made by the size of the input file, the sum of the sizes of all files passed from the map process to reduce processes and the sum of the output sizes of reducer processes, so basically it does not depend on the number of reducers we have, because even if we have 1 reducer or if we have 100000 reducers, we would still have the same size of the input file. We'd still have the same file size input, the same sum of all file sizes passed from map to reduce, and the sum of all reducer outputs.
 
