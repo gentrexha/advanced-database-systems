@@ -384,7 +384,117 @@ $(document).ready(function () {
 
 <div id="exercise-1-distributed-joins-2-points" class="section level2">
 <h2>Exercise 1 (Distributed Joins) [2 Points]</h2>
-<p><strong>a)</strong> Placeholder <strong>a*)</strong> Placeholder <strong>b)</strong> Placeholder</p>
+<p><strong>a)</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>Relation</th>
+<th>Size</th>
+<th>#Records</th>
+<th>Record size (bytes)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Users</td>
+<td>1</td>
+<td>40,000</td>
+<td>800</td>
+</tr>
+<tr class="even">
+<td>Orders</td>
+<td>2</td>
+<td>900,000</td>
+<td>30</td>
+</tr>
+<tr class="odd">
+<td>Products</td>
+<td>3</td>
+<td>1,500</td>
+<td>2000</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th>Relation</th>
+<th>Attribute</th>
+<th>Size (bytes)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Orders</td>
+<td>price</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>Orders</td>
+<td>prod</td>
+<td>8</td>
+</tr>
+<tr class="odd">
+<td>Orders</td>
+<td>user</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<td>Users</td>
+<td>uid</td>
+<td>8</td>
+</tr>
+<tr class="odd">
+<td>Users</td>
+<td>name</td>
+<td>100</td>
+</tr>
+<tr class="even">
+<td>Products</td>
+<td>pid</td>
+<td>8</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math display">\[\pi_{name,price}(Users \bowtie_{uid = user} Orders)\]</span></p>
+<ol style="list-style-type: upper-roman">
+<li><span class="math display">\[(40000\times800) +(900000\times30) = 32 000 000 + 27 000 000 = 59 000 000 \]</span></li>
+<li><span class="math display">\[(40000\times800) +(40 000 \times 900 000 \times \dfrac{1}{360000} \times (100 + 4)) = 32 000 000 + 100000\times 104 = 42400000 \]</span></li>
+<li><span class="math display">\[(900000\times30) +(40 000 \times 900 000 \times \dfrac{1}{360000} \times (100 + 4)) = 27000000 + 100000\times 104 = 37400000 \]</span></li>
+<li></li>
+</ol>
+<p>Send Users’ to site 2 : <span class="math inline">\(40000\times8 = 320000\)</span></p>
+<p>Semi join with Orders send result to site 1 : <span class="math inline">\(100000 \times 12 = 1200000\)</span></p>
+<p>Compute result at site 1 and send result to site 4: <span class="math inline">\(100000\times 104 = 10400000\)</span></p>
+<p>Total Cost: <span class="math inline">\(11920000\)</span></p>
+<ol start="22" style="list-style-type: upper-alpha">
+<li></li>
+</ol>
+<p>Send Orders’ to site 1 : <span class="math inline">\(900000\times8 = 7200000\)</span></p>
+<p>Semi join with Users send result to site 2 : <span class="math inline">\(100000 \times 108 = 10800000\)</span></p>
+<p>Compute result at site 2 and send result to site 4: <span class="math inline">\(100000\times 104 = 10400000\)</span></p>
+<p>Total Cost: <span class="math inline">\(28400000\)</span></p>
+<p><strong>a*)</strong></p>
+<ol style="list-style-type: upper-roman">
+<li></li>
+</ol>
+<p><span class="math display">\[(40000\times108) +(900000\times12) = 4320000 + 10800000 = 15120000 \]</span></p>
+<ol start="2" style="list-style-type: upper-roman">
+<li></li>
+</ol>
+<p><span class="math display">\[(40000\times108) +(40 000 \times 900 000 \times \dfrac{1}{360000} \times (100 + 4)) = 4320000 + 100000\times 104 = 14720000 \]</span></p>
+<ol start="3" style="list-style-type: upper-roman">
+<li></li>
+</ol>
+<p><span class="math display">\[(900000\times12) +(40 000 \times 900 000 \times \dfrac{1}{360000} \times (100 + 4)) = 10800000 + 100000\times 104 = 21200000 \]</span></p>
+<p>For IV and V we already make projection as soon as possible so the result would not change.</p>
+<p><strong>b)</strong> <span class="math inline">\(Products \bowtie \pi_{name,price,prod}(Users \bowtie_{uid = user} Orders)\)</span></p>
+<p>For B in the first case we only take the best result that is IV scenario and add products to projection.</p>
+<p>Send Users’ to site 2 : <span class="math inline">\(40000\times8 = 320000\)</span></p>
+<p>Semi join with Orders send result to site 1 : <span class="math inline">\(100000 \times 20 = 2000000\)</span></p>
+<p>Compute result at site 1 and send result to site 4: <span class="math inline">\(100000\times 112 = 11200000\)</span></p>
+<p>Total Cost: <span class="math inline">\(13520000\)</span></p>
+<p>And for the join with Products because there is no projection in there and the record cost is too big it is not recommended to make a join and than transform data in site 4 it is much better if we just send all the data at site 4 and then compute join. From the first result we have 100000 rows with size of 112 for record. <span class="math display">\[(100000\times112) + (1500\times2000) = 11200000 + 3000000 = 14200000\]</span> So the total cost is : <span class="math inline">\(13520000 + 14200000 = 27720000\)</span></p>
 </div>
 <div id="exercise-2-denormalization-3-points" class="section level2">
 <h2>Exercise 2 (Denormalization) [3 Points]</h2>

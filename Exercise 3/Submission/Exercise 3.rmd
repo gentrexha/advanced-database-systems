@@ -13,12 +13,88 @@ knitr::opts_chunk$set(fig.pos = 'h')
 
 ## Exercise 1 (Distributed Joins) [2 Points]
 
-**a)** 
-Placeholder
+**a)**
+
+
+| Relation | Size | #Records | Record size (bytes) |
+|----------|------|----------|---------------------|
+| Users    | 1    | 40,000   | 800                 |
+| Orders   | 2    | 900,000  | 30                  |
+| Products | 3    | 1,500    | 2000                |
+
+| Relation | Attribute | Size (bytes) |
+|----------|-----------|--------------|
+| Orders | price | 4 |
+| Orders | prod | 8 |
+| Orders | user | 8 |
+| Users | uid | 8 |
+| Users | name | 100 |
+| Products | pid | 8 |
+
+$$\pi_{name,price}(Users \bowtie_{uid = user} Orders)$$
+
+I.
+$$(40000\times800) +(900000\times30) = 32 000 000 + 27 000 000 = 59 000 000 $$
+II.
+$$(40000\times800) +(40 000 \times 900 000 \times \dfrac{1}{360000} \times (100 + 4)) = 32 000 000 + 100000\times 104 = 42400000 $$
+III.
+$$(900000\times30) +(40 000 \times 900 000 \times \dfrac{1}{360000} \times (100 + 4)) = 27000000 + 100000\times 104 = 37400000 $$
+IV.
+
+Send Users' to site 2 : $40000\times8 = 320000$
+
+Semi join with Orders send result to site 1 : $100000 \times 12 = 1200000$
+
+Compute result at site 1 and send result to site 4: $100000\times 104 = 10400000$
+
+Total Cost: $11920000$
+
+V.
+
+Send Orders' to site 1 : $900000\times8 = 7200000$
+
+Semi join with Users send result to site 2 : $100000 \times 108 = 10800000$
+
+Compute result at site 2 and send result to site 4: $100000\times 104 = 10400000$
+
+Total Cost: $28400000$
+
+
+
+
 **a\*)** 
-Placeholder
+
+I.
+
+$$(40000\times108) +(900000\times12) = 4320000 + 10800000 = 15120000 $$
+
+II.
+
+$$(40000\times108) +(40 000 \times 900 000 \times \dfrac{1}{360000} \times (100 + 4)) = 4320000 + 100000\times 104 = 14720000 $$
+
+III.
+
+$$(900000\times12) +(40 000 \times 900 000 \times \dfrac{1}{360000} \times (100 + 4)) = 10800000 + 100000\times 104 = 21200000 $$
+
+For IV and V we already make projection as soon as possible so the result would not change.
+
 **b)** 
-Placeholder
+$Products \bowtie \pi_{name,price,prod}(Users \bowtie_{uid = user} Orders)$
+
+For B in the first case we only take the best result that is IV scenario and add products to projection.
+
+Send Users' to site 2 : $40000\times8 = 320000$
+
+Semi join with Orders send result to site 1 : $100000 \times 20 = 2000000$
+
+Compute result at site 1 and send result to site 4: $100000\times 112 = 11200000$
+
+Total Cost: $13520000$
+
+And for the join with Products because there is no projection in there and the record cost is too big it is not recommended to make a join and than transform data in site 4 it is much better if we just send all the data at site 4 and then compute join. From the first result we have 100000 rows with size of 112 for record.
+$$(100000\times112) + (1500\times2000) = 11200000 + 3000000 = 14200000$$
+So the total cost is : $13520000 + 14200000 = 27720000$
+
 
 ## Exercise 2 (Denormalization) [3 Points]
 Placeholder
