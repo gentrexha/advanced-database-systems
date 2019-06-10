@@ -3,7 +3,7 @@ title: "Exercise Sheet 3, 2019"
 subtitle: "6.0 VU Advanced Database Systems"
 author: "Gent Rexha (11832486), Princ Mullatahiri (11846033)"
 date: "10.06.2019"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -97,16 +97,36 @@ So the total cost is : $13520000 + 14200000 = 27720000$
 
 
 ## Exercise 2 (Denormalization) [3 Points]
-Placeholder
+
+Requirements:
+
+- Two queries should be fast:
+  - Listing all people who have borrowed a book for more than two weeks and not returned it yet (not returned means no to value in the borrowed relation).
+  - Asking if any edition of a book is currently available to be borrowed. (i.e., owned - borrowed but not yet returned books > 0)
+- The borrowed relation is updated frequently (and needs to be efficient). For all other relations, updates are rare and can be more expensive.
+
+To solve the requirements the tables firstly were transformed into separate JSON objects. After analyzing both queries we deciced that the first query can be answered in whole by the `Borrowed` collection only and therefore doesn't need any further optimization. For the second query we decided to add a new field to the `Edition` collection named `borrowedby` which keeps track of the people who have the current document (Book Edition) borrowed and not yet returned. This allows for a quick calculation of the available books by substracting the length of the `borrowedby` array to the `owned` value.
+
+Although this quick calculation comes with a price. that everytime a book is returned the `Edition` with its `borrowedby` field has to be updated.
 
 ## Exercise 3 (Graph Databases) [5 Points]
+
 **a)** 
+
 Placeholder
+
 **b)** 
+
 Placeholder
+
 **c)** 
+
 Placeholder
+
 **d)** 
+
 Placeholder
+
 **e)** 
+
 Placeholder

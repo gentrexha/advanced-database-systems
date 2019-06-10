@@ -255,7 +255,9 @@ h6 {
 </style>
 
 
+</head>
 
+<body>
 
 <style type="text/css">
 .main-container {
@@ -280,92 +282,22 @@ img {
 button.code-folding-btn:focus {
   outline: none;
 }
-summary {
-  display: list-item;
-}
 </style>
 
 
+
+<div class="container-fluid main-container">
 
 <!-- tabsets -->
-
-<style type="text/css">
-.tabset-dropdown > .nav-tabs {
-  display: inline-table;
-  max-height: 500px;
-  min-height: 44px;
-  overflow-y: auto;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
-  font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
-  font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
-}
-
-.tabset-dropdown > .nav-tabs > li.active {
-  display: block;
-}
-
-.tabset-dropdown > .nav-tabs > li > a,
-.tabset-dropdown > .nav-tabs > li > a:focus,
-.tabset-dropdown > .nav-tabs > li > a:hover {
-  border: none;
-  display: inline-block;
-  border-radius: 4px;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
-  display: block;
-  float: none;
-}
-
-.tabset-dropdown > .nav-tabs > li {
-  display: none;
-}
-</style>
-
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
 });
 </script>
 
 <!-- code folding -->
 
 
-
-
-</head>
-
-<body>
-
-
-<div class="container-fluid main-container">
 
 
 
@@ -375,9 +307,9 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Exercise Sheet 3, 2019</h1>
-<h3 class="subtitle">6.0 VU Advanced Database Systems</h3>
-<h4 class="author">Gent Rexha (11832486), Princ Mullatahiri (11846033)</h4>
-<h4 class="date">10.06.2019</h4>
+<h3 class="subtitle"><em>6.0 VU Advanced Database Systems</em></h3>
+<h4 class="author"><em>Gent Rexha (11832486), Princ Mullatahiri (11846033)</em></h4>
+<h4 class="date"><em>10.06.2019</em></h4>
 
 </div>
 
@@ -498,7 +430,16 @@ $(document).ready(function () {
 </div>
 <div id="exercise-2-denormalization-3-points" class="section level2">
 <h2>Exercise 2 (Denormalization) [3 Points]</h2>
-<p>Placeholder</p>
+<p>Requirements:</p>
+<ul>
+<li>Two queries should be fast:
+<ul>
+<li>Listing all people who have borrowed a book for more than two weeks and not returned it yet (not returned means no to value in the borrowed relation).</li>
+<li>Asking if any edition of a book is currently available to be borrowed. (i.e., owned - borrowed but not yet returned books &gt; 0)</li>
+</ul></li>
+<li>The borrowed relation is updated frequently (and needs to be e?cient). For all other relations, updates are rare and can be more expensive.</li>
+</ul>
+<p>To solve the requirements the tables firstly were transformed into separate JSON objects. After analyzing both queries we deciced that the first query can be answered in whole by the Borrowed collection</p>
 </div>
 <div id="exercise-3-graph-databases-5-points" class="section level2">
 <h2>Exercise 3 (Graph Databases) [5 Points]</h2>
