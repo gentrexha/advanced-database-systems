@@ -1,0 +1,108 @@
+{
+"Books":[ 
+{
+    "id": ObjectID("1"),
+    "name": "Computational Complexity",
+    "authors":"Papadimitrou"
+},
+{
+    "id": ObjectID("2"),
+    "name": "Parameterized Complexity Theory",
+    "authors":"Flum, Grohe"
+},
+{
+    "id": ObjectID("3"),
+    "name": "Fundamentals of Database Systems",
+    "authors":"Elmasri, Navathe"
+}],
+"Edition" :[
+{
+    "book": ObjectID("1"),
+    "edition": 1,
+    "year":"1993",
+    "isbn":"0201530821",
+    "owned":3,
+    "borrowedby" : []
+},
+{
+    "book": ObjectID("3"),
+    "edition": 7,
+    "year":"2017",
+    "isbn":"1292097612",
+    "owned":1,
+    "borrowedby" : [{"name" : "Tom"}]
+},
+{
+    "book": ObjectID("3"),
+    "edition": 6,
+    "year":"2010",
+    "isbn":"0136086209",
+    "owned":2,
+    "borrowedby" : []
+},
+{
+    "book": ObjectID("3"),
+    "edition": 2,
+    "year":"1994",
+    "isbn":"0805317481",
+    "owned":6,
+    "borrowedby" : []
+},
+{
+    "book": ObjectID("2"),
+    "edition": 1,
+    "year":"2006",
+    "isbn":"3642067573",
+    "owned":3,
+    "borrowedby" : []
+}],
+"Borrowed" : [
+{
+    "who":    "Charles",
+    "book": "2",
+    "edition": "1",
+    "from": "01-03-2009",
+    "to": "05-12-2010",
+},
+{
+    "who":    "Rachel",
+    "book": "3",
+    "edition": "2",
+    "from": "22-09-1994",
+    "to": "17-01-1997",
+},
+{
+    "who":    "Rachel",
+    "book": "3",
+    "edition": "7",
+    "from": "05-11-2010",
+    "to": "01-12-2010",
+},
+{
+    "who":    "Tom",
+    "book": "3",
+    "edition": "7",
+    "from": "01-05-2019",
+    "to": "",
+},
+{
+    "who":    "Charles",
+    "book": "1",
+    "edition": "1",
+    "from": "21-03-1995",
+    "to": "29-04-1995",
+}],    
+"Person":[
+{
+    "name": "Charles",
+    "address": "420 Paper St", 
+},
+{
+    "name": "Rachel",
+    "address": "90 Bedford St", 
+},
+{
+    "name": "Tom",
+    "address": "41-505 Kalanianaole Highway", 
+}]
+}
