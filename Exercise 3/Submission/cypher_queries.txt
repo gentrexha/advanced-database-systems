@@ -1,0 +1,67 @@
+// (a)
+// 1
+MATCH (n)-[:REGISTERED_ADDRESS]->(a:Address)
+	RETURN DISTINCT(a.countries) AS country
+	ORDER BY country;
+
+// 2
+MATCH (e:Entity)-[:REGISTERED_ADDRESS]->(a:Address)
+	WHERE a.countries CONTAINS 'Albania'
+	RETURN e.name, a.countries
+	LIMIT 5;
+
+// (b)
+// 1
+MATCH (i:Intermediary)-[:INTERMEDIARY_OF]->(n)
+                RETURN i.name AS Name, COUNT(*) AS frequency
+                ORDER BY frequency DESC LIMIT 10;
+// 2
+MATCH a=(i:Intermediary)-[:INTERMEDIARY_OF |:OFFICER_OF]->(n)
+                RETURN i.name AS Name, COUNT(*) AS frequency
+                ORDER BY frequency DESC LIMIT 10;
+// 3
+MATCH a=(i:Intermediary)-[e]->(n)
+                WHERE type(e) <> "OFFICER_OF" AND type(e) <> "INTERMEDIARY_OF"
+                RETURN i.name AS Name, COUNT(*) AS frequency
+                ORDER BY frequency DESC LIMIT 10;
+
+// c (TODO: Needs to be looked at again!)
+MATCH (a:Address),(b:Address)
+              WHERE a.countries CONTAINS 'Luxembourg'
+              AND b.countries CONTAINS 'Cyprus'
+              MATCH p=shortestPath((a)-[*]-(b))
+              WHERE length(p) >= 16 AND length(p) <= 30
+              RETURN p
+              LIMIT 10
+
+MATCH (a:Address),(b:Address)
+              WHERE a.countries CONTAINS 'Luxembourg'
+              AND b.countries CONTAINS 'Cyprus'
+              MATCH p=shortestPath((a)-[*]-(b))
+              WHERE length(p) >= 16 AND length(p) <= 30
+              RETURN a.node_id,b.node_id,length(p)
+              LIMIT 10
+
+// Doc Link: https://neo4j.com/docs/cypher-manual/current/execution-plans/shortestpath-planning/
+MATCH (cs:Address { countries: 'Luxembourg' }),(ms:Address { countries: 'Cyprus' }), p = shortestPath((cs)-[*]-(ms))
+WITH p
+WHERE length(p)> 16 AND length(p)<30
+RETURN length(p)
+
+// d
+// Base version. Working.
+MATCH (i:Intermediary)-[:INTERMEDIARY_OF]->(e:Entity)<-[:OFFICER_OF]-(o:Officer)
+	with i, e, o
+	MATCH (i)-[:INTERMEDIARY_OF]->(e2:Entity)<-[:OFFICER_OF]-(o)
+	WHERE e.name <> e2.name
+	return i, e, o, e2
+	LIMIT 1;
+
+// Out of memory error
+MATCH (i:Intermediary)-[:INTERMEDIARY_OF]->(e:Entity)<-[:OFFICER_OF]-(o:Officer)
+    with i, e, o
+    MATCH (i)-[:INTERMEDIARY_OF]->(e2:Entity)<-[:OFFICER_OF]-(o)
+    WHERE e.name <> e2.name AND e.countries <> e2.countries AND (e2.country_codes <> e2.jurisdiction OR e.country_codes <> e.jurisdiction)
+    return i, e, o, e2
+    LIMIT 1;
+
