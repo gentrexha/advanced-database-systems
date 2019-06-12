@@ -42,11 +42,27 @@ MATCH (a:Address),(b:Address)
               RETURN a.node_id,b.node_id,length(p)
               LIMIT 10
 
+			  
+MATCH (a:Address),(b:Address), p=ShortestPath((a)-[*]-(b))
+              WHERE a.countries CONTAINS 'Luxembourg'
+              AND b.countries CONTAINS 'Cyprus' 
+              AND length(p)>15 AND length(p)<31
+              RETURN a.node_id,b.node_id,length(p)
+              LIMIT 10
+			  
+			  
 // Doc Link: https://neo4j.com/docs/cypher-manual/current/execution-plans/shortestpath-planning/
 MATCH (cs:Address { countries: 'Luxembourg' }),(ms:Address { countries: 'Cyprus' }), p = shortestPath((cs)-[*]-(ms))
 WITH p
 WHERE length(p)> 16 AND length(p)<30
 RETURN length(p)
+
+
+//Works only with Limit1
+Match path = shortestpath( (f:Address{countries:'Luxembourg'}) –[*]-(p:Address{countries:'Cyprus'})) 
+with path,f,p
+WHERE length(path) >15 AND length(path)<31
+return f.node_id,p.node_id, length(path) LIMIT 1
 
 // d
 // Base version. Working.
@@ -64,4 +80,18 @@ MATCH (i:Intermediary)-[:INTERMEDIARY_OF]->(e:Entity)<-[:OFFICER_OF]-(o:Officer)
     WHERE e.name <> e2.name AND e.countries <> e2.countries AND (e2.country_codes <> e2.jurisdiction OR e.country_codes <> e.jurisdiction)
     return i, e, o, e2
     LIMIT 1;
+	
+	
+// e
+//Create the Counry node
+MATCH (o:Other) WHERE NOT o.countries contains ';' AND EXISTS(o.countries)
+WITH o
+MERGE (c:Country {name:o.countries})
+MERGE (o)-[:IN_COUNTRY]->(c)
+ON CREATE SET c.name = o.countries
+RETURN DISTINCT(o.countries)
+
+
+//Execute given query
+match p= (:Other)-[:IN_COUNTRY]->(c:Country) where c.name = 'Ireland'  return p
 
