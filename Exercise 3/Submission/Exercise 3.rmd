@@ -162,11 +162,15 @@ MATCH a=(i:Intermediary)-[e]->(n)
 **c)** 
 
 ```
-Match path = shortestpath( (f:Address{countries:'Luxembourg'}) –[*]-(p:Address{countries:'Cyprus'})) 
+Match path = shortestpath( (f:Address{countries:'Luxembourg'})-[*]-(p:Address{countries:'Cyprus'})) 
 with path,f,p
 WHERE length(path)>15 AND length(path)<31
 return f.node_id,p.node_id, length(path) 
 LIMIT 1
+```
+
+```{r, out.width = "300px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}Graph of query C"}
+knitr::include_graphics('images/example_c.png')
 ```
 
 **d)** 
@@ -178,6 +182,10 @@ MATCH (i:Intermediary)-[:INTERMEDIARY_OF]->(e:Entity)<-[:OFFICER_OF]-(o:Officer)
     WHERE e.name <> e2.name AND e.countries <> e2.countries AND e.country_codes <> e.jurisdiction 
     return i, e, o, e2
     LIMIT 1;
+```
+
+```{r, out.width = "300px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}Graph of query d"}
+knitr::include_graphics('images/example_d.png')
 ```
 
 **e)** 
@@ -197,4 +205,8 @@ Show the new created node with its relationship
 
 ```
 match p= (:Other)-[:IN_COUNTRY]->(c:Country) where c.name = 'Ireland'  return p
+```
+
+```{r, out.width = "300px", echo = FALSE, fig.align = 'center', fig.cap = "\\label{fig:figs}Graph of query E"}
+knitr::include_graphics('images/example_e.png')
 ```

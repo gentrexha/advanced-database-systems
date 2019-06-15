@@ -31,18 +31,9 @@ Match path = shortestpath( (f:Address{countries:'Luxembourg'}) –[*]-(p:Address
 with path,f,p
 WHERE length(path)>15 AND length(path)<31
 return f.node_id,p.node_id, length(path) 
-LIMIT 1
+LIMIT 1;
 
 // d
-// Base version. Working.
-MATCH (i:Intermediary)-[:INTERMEDIARY_OF]->(e:Entity)<-[:OFFICER_OF]-(o:Officer)
-	with i, e, o
-	MATCH (i)-[:INTERMEDIARY_OF]->(e2:Entity)<-[:OFFICER_OF]-(o)
-	WHERE e.name <> e2.name
-	return i, e, o, e2
-	LIMIT 1;
-
-// Out of memory error
 MATCH (i:Intermediary)-[:INTERMEDIARY_OF]->(e:Entity)<-[:OFFICER_OF]-(o:Officer)
     with i, e, o
     MATCH (i)-[:INTERMEDIARY_OF]->(e2:Entity)<-[:OFFICER_OF]-(o)
