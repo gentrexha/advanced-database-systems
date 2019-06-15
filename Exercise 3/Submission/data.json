@@ -70,8 +70,17 @@
             ]
         }
     ],
-    "Borrowed":[
+    "BorrowedBooks":[
         {
+            "who":"Tom",
+            "book":"3",
+            "edition":"7",
+            "from":"01-05-2019",
+            "to":""
+        }
+    ],
+	"ReturnedBooks":[
+	 {
             "who":"Charles",
             "book":"2",
             "edition":"1",
@@ -93,20 +102,13 @@
             "to":"01-12-2010"
         },
         {
-            "who":"Tom",
-            "book":"3",
-            "edition":"7",
-            "from":"01-05-2019",
-            "to":""
-        },
-        {
             "who":"Charles",
             "book":"1",
             "edition":"1",
             "from":"21-03-1995",
             "to":"29-04-1995"
         }
-    ],
+	],
     "Person":[
         {
             "name":"Charles",
